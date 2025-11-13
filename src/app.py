@@ -6,32 +6,40 @@ import torch
 
 @st.cache_resource
 def tokenizer_model():
-    tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3-mini-128k-instruct", trust_remote_code=False)
-    model = AutoModelForCausalLM.from_pretrained("microsoft/Phi-3-mini-128k-instruct", trust_remote_code=False)
+    model_name = "4bit/ELYZA-japanese-Llama-2-7b-instruct"
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto")
     return tokenizer, model
 
 tokenizer, model = tokenizer_model()
 
 # 入力欄
-text = st.text_area("テキストを入力", "こんにちは\nこの前頼まれたやつだけど、間に合わないから遅れるわ\nごめんね")
-chat = [
-    {"role": "system", "content":"入力された文章を、礼儀正しいビジネスメール風の本文に最低限書き換えてください。"},
-    {"role": "user", "content": text},
-]
-prompt = tokenizer.apply_chat_template(chat, tokenize=False, add_generation_prompt=True)
+text = st.text_area("テキストを入力", "こんにちは\nこの前頼まれた件だけど、間に合わないから遅れるわ\nごめんね")
+B_INST, E_INST = "[INST]", "[/INST]"
+B_SYS, E_SYS = "<<SYS>>\n", "\n<</SYS>>\n\n"
+DEFAULT_SYSTEM_PROMPT = "入力された文章を礼儀正しいビジネスメール風の本文に書き換えてください。出力："
 
-model.to("cuda")
+if torch.cuda.is_available():
+    model = model.to("cuda")
+
+prompt = "{bos_token}{b_inst} {system}{prompt} {e_inst} ".format(
+    bos_token=tokenizer.bos_token,
+    b_inst=B_INST,
+    system=f"{B_SYS}{DEFAULT_SYSTEM_PROMPT}{E_SYS}",
+    prompt=text,
+    e_inst=E_INST,
+)
 
 if st.button("分析する"):
     with st.spinner("分析中..."):
-        token_ids = tokenizer.encode(prompt, add_special_tokens=False, return_tensors="pt")
         with torch.no_grad():
+            token_ids = tokenizer.encode(prompt, add_special_tokens=False, return_tensors="pt")
+
             output_ids = model.generate(
                 token_ids.to(model.device),
-                do_sample=True,
-                temperature=0.6,
-                max_new_tokens=512,
+                max_new_tokens=256,
+                pad_token_id=tokenizer.pad_token_id,
+                eos_token_id=tokenizer.eos_token_id,
             )
-
         output = tokenizer.decode(output_ids.tolist()[0][token_ids.size(1) :], skip_special_tokens=True)
         st.success(output)
