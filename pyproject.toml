@@ -9,7 +9,6 @@ dependencies = [
     "streamlit>=1.51.0",
     "torch>=2.5.1",
     "transformers>=4.57.1",
-    "vllm>=0.7.3",
 ]
 
 [tool.uv.sources]
