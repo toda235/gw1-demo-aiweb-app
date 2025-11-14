@@ -6,7 +6,10 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "accelerate>=1.11.0",
+    "huggingface-hub>=0.36.0",
     "streamlit>=1.51.0",
+    "streamlit-option-menu>=0.4.0",
+    "streamlit-toggle-switch>=1.0.2",
     "torch==2.5.1",
     "transformers>=4.57.1",
 ]
