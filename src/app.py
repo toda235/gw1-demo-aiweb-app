@@ -6,40 +6,57 @@ import torch
 
 @st.cache_resource
 def tokenizer_model():
-    model_name = "4bit/ELYZA-japanese-Llama-2-7b-instruct"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto")
+    tokenizer = AutoTokenizer.from_pretrained("stabilityai/japanese-stablelm-instruct-gamma-7b")
+    model = AutoModelForCausalLM.from_pretrained(
+    "stabilityai/japanese-stablelm-instruct-gamma-7b",
+    torch_dtype="auto",
+    )
     return tokenizer, model
+
+def build_prompt(user_query, inputs="", sep="\n\n### "):
+    sys_msg = "以下は、タスクを説明する指示と、文脈のある入力の組み合わせです。要求を適切に満たす応答を書きなさい。"
+    p = sys_msg
+    roles = ["指示", "応答"]
+    msgs = [": \n" + user_query, ": \n"]
+    if inputs:
+        roles.insert(1, "入力")
+        msgs.insert(1, ": \n" + inputs)
+    for role, msg in zip(roles, msgs):
+        p += sep + role + msg
+    return p
 
 tokenizer, model = tokenizer_model()
 
+
+
 # 入力欄
-text = st.text_area("テキストを入力", "こんにちは\nこの前頼まれた件だけど、間に合わないから遅れるわ\nごめんね")
-B_INST, E_INST = "[INST]", "[/INST]"
-B_SYS, E_SYS = "<<SYS>>\n", "\n<</SYS>>\n\n"
-DEFAULT_SYSTEM_PROMPT = "入力された文章を礼儀正しいビジネスメール風の本文に書き換えてください。出力："
+text = st.text_area("テキストを入力", "ごめん、明日の会議だけど、資料がまだできてないからリスケでお願い。")
+user_inputs = {
+    "user_query": "与えられた文章を、ビジネスメール風の丁寧で簡潔な文章に変換してください。",
+    "inputs": text
+}
+prompt = build_prompt(**user_inputs)
 
 if torch.cuda.is_available():
     model = model.to("cuda")
 
-prompt = "{bos_token}{b_inst} {system}{prompt} {e_inst} ".format(
-    bos_token=tokenizer.bos_token,
-    b_inst=B_INST,
-    system=f"{B_SYS}{DEFAULT_SYSTEM_PROMPT}{E_SYS}",
-    prompt=text,
-    e_inst=E_INST,
-)
-
 if st.button("分析する"):
     with st.spinner("分析中..."):
         with torch.no_grad():
-            token_ids = tokenizer.encode(prompt, add_special_tokens=False, return_tensors="pt")
-
-            output_ids = model.generate(
-                token_ids.to(model.device),
-                max_new_tokens=256,
-                pad_token_id=tokenizer.pad_token_id,
-                eos_token_id=tokenizer.eos_token_id,
+            input_ids = tokenizer.encode(
+                prompt, 
+                add_special_tokens=True, 
+                return_tensors="pt"
             )
-        output = tokenizer.decode(output_ids.tolist()[0][token_ids.size(1) :], skip_special_tokens=True)
-        st.success(output)
+
+            tokens = model.generate(
+                input_ids.to(device=model.device),
+                max_new_tokens=256,
+                temperature=1,
+                top_p=0.95,
+                do_sample=True,
+            )
+
+            out = tokenizer.decode(tokens[0][input_ids.shape[1]:], skip_special_tokens=True).strip()
+        st.success(out)
+        print(out)
