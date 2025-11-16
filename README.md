@@ -1,32 +1,18 @@
-# グループワーク第1回 AIWebアプリ開発
-このリポジトリは、**Streamlit** と **Hugging Face Transformers** を使って簡単にNLP（自然言語処理）アプリを作るためのテンプレートです。  
-ハッカソンや学習用プロジェクトの土台として活用できます！
+# グループワーク第1回　✉メール文変換・評価
 
-## 🚀 できること
-
-- ブラウザ上で動く感情分析アプリをすぐに実行できます。
-- 入力したテキストに対して、ポジティブ／ネガティブなどの感情を判定します。
-- Hugging Faceのモデルを直接利用します（GPUサーバを利用します）。
+テンプレートを元に作成しました。
 
 
 ## 📦 セットアップ手順
-
-以下の手順で実行環境を整えましょう！
-
 ### 1. リポジトリをクローン
 
 GitHubからコードを取得します。
 
 ```bash
-git clone https://github.com/fuji029/demo-gw1-aiwebapp
+git clone https://github.com/toda235/gw1-demo-aiweb-app.git
 cd demo-gw1-aiwebapp
 ```
 
-> 💡 GitHubとは？
-> 
-> プログラムのソースコードを共有・管理するためのサービスです。
-> 
-> git clone は、リポジトリ（プロジェクト全体）を自分のPCにコピーするコマンドです。
 
 ### 2. 依存パッケージをインストール
 
@@ -43,21 +29,19 @@ uv sync
 | **transformers**    | Hugging FaceのNLPモデルを簡単に扱うためのライブラリ      |
 | **torch (PyTorch)** | モデルの実行を支える数値計算エンジン（Hugging Faceモデルの基盤） |
 | **accelerate**      | モデルの処理を自動的にCPU/GPUに最適化してくれる補助ライブラリ     |
+| **huggingface_hub** | huggingfaceに関する機能を提供しているライブラリ（今回はAPIでLLMモデルを使うために利用）
 
+### 3 Huggingface API
+**app.py**の13行目にHuggingfaceのReadTokenを入力することで、APIを使った機能を利用できます。
+```python app.py
+api_key = "YourToken"
+```
 
-### 3. アプリを起動
+### 4. アプリを起動
 以下のコマンドでWebアプリを起動します。
 ```bash
 uv run streamlit run src/app.py --server.port 8000
 ```
-以上のコマンドでリモートサーバ上の`localhost:8000`にアプリが展開されます。
-
-ローカルPCで確かめるには以下のコマンドを実行し、ポート転送を用いてリモートサーバのポート8000番をローカルの8000番等に転送しましょう。
-```bash
-ssh user@ssh.server -L 8000:localhost:8000
-```
-また、VSCodeからリモートサーバにアクセスしている人は、以下の方法でも構いません。
-> （参考）：[VSCode の新機能「ポート転送」が外部確認で便利！](https://www.gaji.jp/blog/2023/10/02/17169/)
 
 ## 📁 ディレクトリ構成
 ```txt
@@ -73,7 +57,7 @@ ssh user@ssh.server -L 8000:localhost:8000
 
 ```
 
-## 🏃 次のステップ...？
-- アプリのテーマを変えてみましょう（要約・翻訳など）。
-- Hugging Faceの他のモデルに変更して試してみましょう。
-- Streamlitのコンポーネントを追加してUIを改善してみましょう！
+## 😊使用モデル
+- メール文変換　Qwen/Qwen2.5-7B-Instruct 
+- メール文変換・評価　openai/gpt-oss-120b
+- 丁寧レベル評価　microsoft/deberta-v3-base ([Kei-Corpus ](https://github.com/Liumx2020/KeiCO-corpus)© Ochanomizu University Kobayashi Lab, Liu Muxuan を用いたファインチューニング )
