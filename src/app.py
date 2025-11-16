@@ -4,12 +4,11 @@ from transformers import pipeline
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 from streamlit_option_menu import option_menu
-import streamlit_toggle_diy as tog
-from streamlit_toggle import st_toggle_switch
 from huggingface_hub import InferenceClient
 import streamlit.components.v1 as components
 from pathlib import Path
 
+# huggingfaceのTokenを記入
 api_key = ""
 
 st.set_page_config(page_title="メール文変換・評価", page_icon="✉")
@@ -53,7 +52,7 @@ def inits():
         [data-testid="stHeader"] {
             background-color: rgba(0,0,0,0) !important;
         }
-
+                
         iframe[srcdoc] {
             position: fixed !important;
             top: 0 !important;
@@ -498,7 +497,14 @@ elif selected_mode == "メール評価":
                         messages=messages, 
                         max_tokens=1024
                     )
-
-                    st.write(completion.choices[0].message.content)
+                    response = completion.choices[0].message.content
+                    st.markdown(
+                        f"""
+                        <div style="background-color: white; padding: 10px; border-radius:5px;">
+                        {response}
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
                 except Exception as e:
                     st.error("APIリクエストでエラーが発生しました。")

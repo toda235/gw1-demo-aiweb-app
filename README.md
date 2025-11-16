@@ -31,7 +31,7 @@ uv sync
 | **huggingface_hub** | huggingfaceに関する機能を提供しているライブラリ（今回はAPIでLLMモデルを使うために利用）
 
 ### 3 Huggingface API
-**app.py**の13行目にHuggingfaceのReadTokenを入力することで、APIを使った機能を利用できます。
+**app.py**の12行目にHuggingfaceのReadTokenを入力することで、APIを使った機能を利用できます。
 ```python app.py
 api_key = "YourToken"
 ```
@@ -56,7 +56,8 @@ uv run streamlit run src/app.py --server.port 8000
 
 ```
 
-## 😊使用モデル
-- メール文変換　Qwen/Qwen2.5-7B-Instruct 
-- メール文変換・評価　openai/gpt-oss-120b
-- 丁寧レベル評価　microsoft/deberta-v3-base ("[Kei-Corpus ](https://github.com/Liumx2020/KeiCO-corpus)© Ochanomizu University Kobayashi Lab, Liu Muxuan" を用いたファインチューニング )
+## 使用モデルなど
+- メール文変換　　Qwen/Qwen2.5-7B-Instruct 
+- メール文変換・評価　　openai/gpt-oss-120b
+- 丁寧レベル評価　　microsoft/deberta-v3-base ("[Kei-Corpus ](https://github.com/Liumx2020/KeiCO-corpus)© Ochanomizu University Kobayashi Lab, Liu Muxuan" を用いたファインチューニング )
+- 背景パーティクル　　[particles.js](https://github.com/VincentGarreau/particles.js) MIT License
