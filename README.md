@@ -2,7 +2,6 @@
 
 テンプレートを元に作成しました。
 
-
 ## 📦 セットアップ手順
 ### 1. リポジトリをクローン
 
@@ -47,8 +46,8 @@ uv run streamlit run src/app.py --server.port 8000
 ```txt
 .
 ├─ src
-│   ├─ app.py       # Streamlitアプリのメインコード
-│   └─ README.md    # コード説明用ドキュメント
+│   ├─ app.py               # Streamlitアプリのメインコード
+│   └─ particles.min.js     # 背景パーティクルのためのJSコード
 ├─ .gitignore
 ├─ .python-version
 ├─ pyproject.toml   # パッケージ管理
@@ -60,4 +59,4 @@ uv run streamlit run src/app.py --server.port 8000
 ## 😊使用モデル
 - メール文変換　Qwen/Qwen2.5-7B-Instruct 
 - メール文変換・評価　openai/gpt-oss-120b
-- 丁寧レベル評価　microsoft/deberta-v3-base ([Kei-Corpus ](https://github.com/Liumx2020/KeiCO-corpus)© Ochanomizu University Kobayashi Lab, Liu Muxuan を用いたファインチューニング )
+- 丁寧レベル評価　microsoft/deberta-v3-base ("[Kei-Corpus ](https://github.com/Liumx2020/KeiCO-corpus)© Ochanomizu University Kobayashi Lab, Liu Muxuan" を用いたファインチューニング )
