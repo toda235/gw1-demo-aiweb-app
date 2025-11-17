@@ -10,7 +10,6 @@ from pathlib import Path
 
 # huggingfaceのTokenを記入
 api_key = ""
-
 st.set_page_config(page_title="メール文変換・評価", page_icon="✉")
 
 st.markdown("""
@@ -37,7 +36,7 @@ def tokenizer_model():
     return tokenizer, model, pipe
 
 @st.cache_resource
-def inits():
+def inits(number=60, size=4):
     current_dir = Path(__file__).parent
     js_file_path = current_dir / "particles.min.js"
     with open(js_file_path, "r", encoding="utf-8") as f:
@@ -51,8 +50,7 @@ def inits():
         
         [data-testid="stHeader"] {
             background-color: rgba(0,0,0,0) !important;
-        }
-                
+        } 
         iframe[srcdoc] {
             position: fixed !important;
             top: 0 !important;
@@ -83,7 +81,11 @@ def inits():
             transition: transform 0.2s;
             font-weight: 900;
         }
-                
+        [data-testid="stAlertContainer"] {
+            background-color: #f0f2f6 !important;  /* 好きな色に変更可 */
+            opacity: 1 !important;                 /* 透明度を1に固定 */
+            color: black;
+        }
         .stButton>button:hover { 
             transform: scale(1.05); 
             color: black;
@@ -114,11 +116,11 @@ def inits():
     <script>
         particlesJS("particles-js", {{
         "particles": {{
-            "number": {{ "value": 50 }},
+            "number": {{ "value": {number} }},
             "color": {{ "value": "#ff4b4b" }},
             "shape": {{ "type": "circle" }},
             "opacity": {{ "value": 0.6 }},
-            "size": {{ "value": 3, "random": true }},
+            "size": {{ "value": {size}, "random": true }},
             "line_linked": {{ 
                 "enable": true, 
                 "distance": 150, 
@@ -167,7 +169,6 @@ if torch.cuda.is_available():
     model = model.to("cuda")
 client = InferenceClient(api_key=api_key)
 labels = {"LABEL_0":3, "LABEL_1":2, "LABEL_2":1, "LABEL_3":0}
-
 
 st.markdown(
 """
@@ -447,8 +448,8 @@ elif selected_mode == "メール評価":
             "・添削・評価したい文章のみを入力してください  \n" \
             "【注意点】  \n" \
             "・必ずしも礼儀正しい文章が出力されるとは限りません  \n" \
-            "・変換した文章によってトラブルが発生しても責任を取りません  \n" \
-            "・変換回数に制限があります  \n" \
+            "・生成した文章によってトラブルが発生しても責任を取りません  \n" \
+            "・回答回数に制限があります  \n" \
             "・APIで外部LLMに入力を転送しています")
     st.divider()
 
