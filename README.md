@@ -31,9 +31,10 @@ uv sync
 | **huggingface_hub** | huggingfaceに関する機能を提供しているライブラリ（今回はAPIでLLMモデルを使うために利用）
 
 ### 3 Huggingface API
-**app.py**の12行目にHuggingfaceのReadTokenを入力することで、APIを使った機能を利用できます。
-```python app.py
-api_key = "YourToken"
+.envを作成し、``HUGGINGFACE_READ_APIKEY`` にAPIKEYを定義してください 
+
+```text
+HUGGINGFACE_READ_APIKEY=YOUR_APIKEY
 ```
 
 ### 4. アプリを起動
